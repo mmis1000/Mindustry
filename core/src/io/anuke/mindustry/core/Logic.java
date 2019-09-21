@@ -176,7 +176,9 @@ public class Logic implements ApplicationListener{
         if(!state.is(State.menu)){
 
             if(!state.isPaused()){
-                Time.update();
+                if (state.is(State.playing)) {
+                    Time.update();
+                }
 
                 if(state.rules.waves && state.rules.waveTimer && !state.gameOver){
                     if(!state.rules.waitForWaveToEnd || unitGroups[waveTeam.ordinal()].size() == 0){
@@ -184,7 +186,7 @@ public class Logic implements ApplicationListener{
                     }
                 }
 
-                if(!net.client() && state.wavetime <= 0 && state.rules.waves){
+                if(state.is(State.playing) && !net.client() && state.wavetime <= 0 && state.rules.waves){
                     runWave();
                 }
 
@@ -194,15 +196,17 @@ public class Logic implements ApplicationListener{
                 }
 
                 if(!state.isEditor()){
-                    for(EntityGroup group : unitGroups){
-                        group.update();
-                    }
+                    if (state.is(State.playing) ) {
+                        for (EntityGroup group : unitGroups) {
+                            group.update();
+                        }
 
-                    puddleGroup.update();
-                    shieldGroup.update();
-                    bulletGroup.update();
-                    tileGroup.update();
-                    fireGroup.update();
+                        puddleGroup.update();
+                        shieldGroup.update();
+                        bulletGroup.update();
+                        tileGroup.update();
+                        fireGroup.update();
+                    }
                 }else{
                     for(EntityGroup<?> group : unitGroups){
                         group.updateEvents();
@@ -210,16 +214,14 @@ public class Logic implements ApplicationListener{
                     }
                 }
 
-
                 playerGroup.update();
 
                 //effect group only contains item transfers in the headless version, update it!
-                if(headless){
+                if(state.is(State.playing) && headless){
                     effectGroup.update();
                 }
 
-                if(!state.isEditor()){
-
+                if(state.is(State.playing) && !state.isEditor()){
                     for(EntityGroup group : unitGroups){
                         if(group.isEmpty()) continue;
                         collisions.collideGroups(bulletGroup, group);
