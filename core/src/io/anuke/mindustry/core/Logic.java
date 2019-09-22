@@ -180,7 +180,7 @@ public class Logic implements ApplicationListener{
                     Time.update();
                 }
 
-                if(state.rules.waves && state.rules.waveTimer && !state.gameOver){
+                if(state.is(State.playing) && state.rules.waves && state.rules.waveTimer && !state.gameOver){
                     if(!state.rules.waitForWaveToEnd || unitGroups[waveTeam.ordinal()].size() == 0){
                         state.wavetime = Math.max(state.wavetime - Time.delta(), 0);
                     }
